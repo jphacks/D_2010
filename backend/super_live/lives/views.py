@@ -84,7 +84,7 @@ def addVideos(request):
 def setReaction(request):
     if 'id' in request.GET:
         id = request.GET['id']
-        re = request.GET['reaction']
+        re = request.POST['reaction']
         if id in Live.objects.values_list('liveId', flat=True) and re in reactionSet:
             l = get_object_or_404(Live, liveId = id)
             try:
