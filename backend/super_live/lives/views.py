@@ -40,7 +40,7 @@ def SearchYtId(request):
 
 
 def addVideos(request):
-    DEVELOPER_KEY = "AIzaSyBnUnVdQgp1W4AFuZ_-ElSTAt79M0aE0y0" #Youtube API Keyを入れるところ
+    DEVELOPER_KEY = "Your API Key" #Youtube API Keyを入れるところ
     YOUTUBE_API_SERVICE_NAME = "youtube"
     YOUTUBE_API_VERSION = "v3"
     if 'id' in request.GET and 'user' in request.GET:
@@ -117,3 +117,7 @@ def setReaction(request):
         }
         json_str = json.dumps(params, ensure_ascii=False, indent=2)
         return HttpResponse(json_str)
+
+
+def getReaction(request):
+
