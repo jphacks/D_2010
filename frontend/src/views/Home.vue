@@ -51,7 +51,7 @@ export default {
   name: 'Home',
   data() {
     return {
-      videoId: "H66BgQAbwU8",
+      videoId: "",
       query: "",
       reaction: "",
       interval: undefined,
