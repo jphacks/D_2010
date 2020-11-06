@@ -37,7 +37,7 @@ def SearchYtId(request):
 
 
 def addVideos(request):
-    DEVELOPER_KEY = "AIzaSyBvde10k7ikU_qQU5CajasqJ57AcmlTTJc" #下川穣汰のYoutube API Key
+    DEVELOPER_KEY = "" #Youtube API Keyを入れるところ
     YOUTUBE_API_SERVICE_NAME = "youtube"
     YOUTUBE_API_VERSION = "v3"
     if 'id' in request.GET and 'user' in request.GET:
