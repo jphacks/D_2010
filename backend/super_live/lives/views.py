@@ -1,9 +1,10 @@
 import json
-
+import urllib.parse
 from django.shortcuts import render
 from django.http import HttpResponse
 from .models import Live
 from django.utils import timezone
+
 
 def SearchYtId(request):
     if 'name' in request.GET:
@@ -34,17 +35,15 @@ def SearchYtId(request):
     return HttpResponse(json_str)
 
 
-"""
+
 def addVideos(request):
     if 'id' in request.GET and 'user' in request.GET:
         l = Live()
         liveUser = request.GET['user']
         liveId = request.GET['id']
         
-
-        liveNameにliveId(YouTubeIDと同じ)からとってきたライブのタイトルをとってきてほしい
     
-        liveName = 
+        liveName = 'hogehoge'
 
         pub_date = timezone.now()
 
@@ -52,22 +51,17 @@ def addVideos(request):
         l.liveUser = liveUser
         l.pub_date = pub_date
         l.liveName = liveName
+        l.save()
 
+        message = 'success'
     
     else:
-        user = 'NA'
-        liveId = 'NA'
-        pub_data = 'NA'
-        message = 'Failure to add video'
+        message='fauler'
 
-    params = {
-        'user': user,
-        'liveId':liveId,
+    params={
         'message':message,
     }
 
     json_str = json.dumps(params, ensure_ascii=False, indent=2)
     return HttpResponse(json_str)
-
-"""
      
