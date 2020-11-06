@@ -7,4 +7,5 @@ urlpatterns = [
     path('search/', views.SearchYtId, name='SearchYtId'),
     path('addvideo/', views.addVideos, name='addVideos'),
     path('setReaction/',views.setReaction, name='setReaction'),
+    path('getReaction/', views.getReaction, name='getReaction'),
 ]

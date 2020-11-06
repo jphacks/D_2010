@@ -40,7 +40,7 @@ def SearchYtId(request):
 
 
 def addVideos(request):
-    DEVELOPER_KEY = "Your API Key" #Youtube API Keyを入れるところ
+    DEVELOPER_KEY = "You're API Key" #Youtube API Keyを入れるところ
     YOUTUBE_API_SERVICE_NAME = "youtube"
     YOUTUBE_API_VERSION = "v3"
     if 'id' in request.GET and 'user' in request.GET:
@@ -120,4 +120,49 @@ def setReaction(request):
 
 
 def getReaction(request):
+    if 'id' in request.GET:
+        id = request.GET['id']
+        sample = Live.objects.values_list('liveId',flat=True)
+        print(sample)
+        if id in Live.objects.values_list('liveId', flat=True):
+            l = get_object_or_404(Live, liveId=id)
+            choiced_reaction = l.reactions_set.all()
 
+            for react in choiced_reaction:
+                if react.reactionCount % 10 == 0:
+                    sendreaction = react.reaction
+                    message = 'success'
+
+                    params = {
+                        'Reaction':sendreaction,
+                        'message':message,
+                    }
+
+                    json_str=json.dumps(params, ensure_ascii=False, indent=2)
+                    return HttpResponse(json_str)
+                else:
+                    sendreaction='NA'
+                    message='no reactions'
+
+                    params = {
+                        'Reaction': sendreaction,
+                        'message':message,
+                    }
+
+                    json_str=json.dumps(params, ensure_ascii=False, indent=2)
+
+
+        else:
+            params={
+                'Reaction':'NA',
+                'message':'do not exist such a video'
+            }
+            json_str = json.dumps(params, ensure_ascii=False, indent=2)            
+    else:
+        params={
+        'Reaction':'NA',
+        'message':'input id'
+        }
+        json_str = json.dumps(params, ensure_ascii=False, indent=2)
+    
+    return HttpResponse(json_str)
