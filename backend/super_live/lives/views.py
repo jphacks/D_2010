@@ -8,6 +8,8 @@ from django.utils import timezone
 from apiclient.discovery import build
 
 
+reactionSet = ['happy', 'sad', 'wow']
+
 def SearchYtId(request):
     if 'name' in request.GET:
         name = request.GET['name']
@@ -79,10 +81,10 @@ def addVideos(request):
 
 
 def setReaction(request):
-    if 'id' in request.GET and 'reaction' in request.GET:
+    if 'id' in request.GET:
         id = request.GET['id']
-        re = request.GET['reaction']
-        if id in Live.objects.values_list('liveId', flat=True) and re == 'happy':
+        re = request.POST['reaction']
+        if id in Live.objects.values_list('liveId', flat=True) and re in reactionSet:
             l = get_object_or_404(Live, liveId = id)
             try:
                 selected_reaction = l.reactions_set.get(reaction=re)
@@ -99,7 +101,7 @@ def setReaction(request):
 
                 message = 'success'
                 params = {
-                    message:'success',
+                    'message':'success',
                 }
                 json_str = json.dumps(params, ensure_ascii=False, indent=2)
                 return HttpResponse(json_str)
