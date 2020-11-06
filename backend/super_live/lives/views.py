@@ -4,6 +4,7 @@ from django.shortcuts import render
 from django.http import HttpResponse
 from .models import Live
 from django.utils import timezone
+from apiclient.discovery import build
 
 def SearchYtId(request):
     if 'name' in request.GET:
@@ -34,17 +35,21 @@ def SearchYtId(request):
     return HttpResponse(json_str)
 
 
-"""
+
 def addVideos(request):
+    DEVELOPER_KEY = "AIzaSyBvde10k7ikU_qQU5CajasqJ57AcmlTTJc" #下川穣汰のYoutube API Key
+    YOUTUBE_API_SERVICE_NAME = "youtube"
+    YOUTUBE_API_VERSION = "v3"
     if 'id' in request.GET and 'user' in request.GET:
         l = Live()
         liveUser = request.GET['user']
         liveId = request.GET['id']
         
 
-        liveNameにliveId(YouTubeIDと同じ)からとってきたライブのタイトルをとってきてほしい
-    
-        liveName = 
+        #liveNameにliveId(YouTubeIDと同じ)からとってきたライブのタイトルをとってきてほしい
+        youtube = build(YOUTUBE_API_SERVICE_NAME,YOUTUBE_API_VERSION,developerKey=DEVELOPER_KEY,cache_discovery=False)
+        response = youtube.videos().list(part="snippet,liveStreamingDetails",id=liveId).execute()
+        liveName = response["items"][0]["snippet"]["title"]
 
         pub_date = timezone.now()
 
@@ -69,5 +74,5 @@ def addVideos(request):
     json_str = json.dumps(params, ensure_ascii=False, indent=2)
     return HttpResponse(json_str)
 
-"""
+
      
