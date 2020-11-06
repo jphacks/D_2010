@@ -65,7 +65,8 @@ def addVideos(request):
         l.liveName = liveName
         l.save()
 
-        l.reactions_set.create(reaction='happy', reactionCount=0)
+        for re in reactionSet:
+            l.reactions_set.create(reaction=re, reactionCount=0)
 
         message = 'success'
     
@@ -83,7 +84,7 @@ def addVideos(request):
 def setReaction(request):
     if 'id' in request.GET:
         id = request.GET['id']
-        re = request.POST['reaction']
+        re = request.GET['reaction']
         if id in Live.objects.values_list('liveId', flat=True) and re in reactionSet:
             l = get_object_or_404(Live, liveId = id)
             try:
