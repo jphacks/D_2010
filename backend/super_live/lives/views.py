@@ -11,6 +11,8 @@ from apiclient.discovery import build
 
 DEVELOPER_KEY = "You're API Key" #Youtube API Keyを入れるところ
 reactionSet = ['happy', 'sad', 'wow']
+YOUTUBE_API_SERVICE_NAME = "youtube"
+YOUTUBE_API_VERSION = "v3"
 
 
 #viewとはあまり関係がない関数
@@ -54,8 +56,7 @@ def SearchYtId(request):
 
 
 def addVideos(request):
-    YOUTUBE_API_SERVICE_NAME = "youtube"
-    YOUTUBE_API_VERSION = "v3"
+
     if 'id' in request.GET and 'user' in request.GET:
         l = Live()
         liveUser = request.GET['user']
@@ -141,8 +142,11 @@ def getReaction(request):
             choiced_reaction = l.reactions_set.all()
 
 #            ここに呼び出されたら現在の視聴者数を取得するプログラムを書いてほしい
-#            viewer = 
-
+            youtube = build(YOUTUBE_API_SERVICE_NAME,YOUTUBE_API_VERSION,developerKey=DEVELOPER_KEY,cache_discovery=False)
+            response = youtube.videos().list(part="snippet,liveStreamingDetails",id=liveId).execute()
+            liveName = response["items"][0]["snippet"]["title"]
+            viewer = response["items"][0]["liveStreamingDetails"]["concurrentViewers"]
+            
             for react in choiced_reaction:
                 if react.reactionCount % min(viewer) == 0:
                     sendreaction = react.reaction
