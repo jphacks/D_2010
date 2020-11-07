@@ -8,7 +8,19 @@ from django.utils import timezone
 from apiclient.discovery import build
 
 
+
+DEVELOPER_KEY = "You're API Key" #Youtube API Keyを入れるところ
 reactionSet = ['happy', 'sad', 'wow']
+
+
+#viewとはあまり関係がない関数
+def min(a):
+    if a <= 10:
+        return 10
+    else:
+        return a
+
+
 
 def SearchYtId(request):
     if 'name' in request.GET:
@@ -42,7 +54,6 @@ def SearchYtId(request):
 
 
 def addVideos(request):
-    DEVELOPER_KEY = "You're API Key" #Youtube API Keyを入れるところ
     YOUTUBE_API_SERVICE_NAME = "youtube"
     YOUTUBE_API_VERSION = "v3"
     if 'id' in request.GET and 'user' in request.GET:
@@ -125,14 +136,15 @@ def setReaction(request):
 def getReaction(request):
     if 'id' in request.GET:
         id = request.GET['id']
-        sample = Live.objects.values_list('liveId',flat=True)
-        print(sample)
         if id in Live.objects.values_list('liveId', flat=True):
             l = get_object_or_404(Live, liveId=id)
             choiced_reaction = l.reactions_set.all()
 
+#            ここに呼び出されたら現在の視聴者数を取得するプログラムを書いてほしい
+#            viewer = 
+
             for react in choiced_reaction:
-                if react.reactionCount % 10 == 0:
+                if react.reactionCount % min(viewer) == 0:
                     sendreaction = react.reaction
                     message = 'success'
 
