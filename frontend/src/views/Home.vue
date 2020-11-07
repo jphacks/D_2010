@@ -59,7 +59,7 @@ export default {
     }
   },
   created() {
-    this.interval = setInterval(this.receiveReaction, 1000)
+     this.interval = setInterval(this.receiveReaction, 1000)
   },
   beforeDestroy() {
     if (this.interval) {
@@ -96,7 +96,7 @@ export default {
     async getLiveid() {
       try {
         return await
-            axios.get("http://l9vkj.mocklab.io/search", {params: this.axiosParams})
+            axios.get("http://127.0.0.1:8000/search/", {params: this.axiosParams})
       } catch (error) {
         console.error(error)
       }
@@ -104,23 +104,31 @@ export default {
     async getReaction() {
       try {
         return await
-            axios.get("http://l9vkj.mocklab.io/getReaction", {params: this.getReactionParams})
+            axios.get("http://127.0.0.1:8000/getReaction/", {params: this.getReactionParams})
       } catch (error) {
         console.error(error)
       }
     },
     async setReaction() {
-      const client = axios.create({
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
       try {
-        return await await client.post("http://l9vkj.mocklab.io/setReaction", this.reactionParams);
+        return await await axios.get("http://127.0.0.1:8000/setReaction/", {params: this.reactionParams});
       } catch (error) {
         console.error(error)
       }
     },
+
+    // async setReaction() {
+    //   const client = axios.create({
+    //     headers: {
+    //       'Content-Type': 'application/json',
+    //     },
+    //   });
+    //   try {
+    //     return await await client.post("http://127.0.0.1:8000/setReaction", this.reactionParams);
+    //   } catch (error) {
+    //     console.error(error)
+    //   }
+    // },
 
   },
   computed: {
