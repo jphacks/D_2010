@@ -9,7 +9,7 @@ from apiclient.discovery import build
 
 
 
-DEVELOPER_KEY = "AIzaSyBnUnVdQgp1W4AFuZ_-ElSTAt79M0aE0y0" #Youtube API Keyを入れるところ
+DEVELOPER_KEY = "API Key" #Youtube API Keyを入れるところ
 reactionSet = ['happy', 'sad', 'wow']
 YOUTUBE_API_SERVICE_NAME = "youtube"
 YOUTUBE_API_VERSION = "v3"
@@ -17,8 +17,8 @@ YOUTUBE_API_VERSION = "v3"
 
 #viewとはあまり関係がない関数
 def min(a):
-    if a <= 10:
-        return 10
+    if a <= 11:
+        return 11
     else:
         return a
 
@@ -28,8 +28,23 @@ def SearchYtId(request):
     if 'name' in request.GET:
         name = request.GET['name']
         name = urllib.parse.unquote(name)
+        for name_str in Live.objects.values_list("liveName", flat=True):
+            if name in name_str:
+                liveId = ', '.join([q.liveId for q in Live.objects.filter(liveName=name)])
+                pub_data = timezone.now()
+                message = 'success'
+        for name_str in Live.objects.values_list("liveUser", flat=True):
+            if name in name_str:
+                liveId = ', '.join([q.liveId for q in Live.objects.filter(liveUser=name)])
+                pub_data = timezone.now()
+                message = 'success'
+                
         if name in Live.objects.values_list("liveName", flat=True):
             liveId = ', '.join([q.liveId for q in Live.objects.filter(liveName=name)])
+            pub_data = timezone.now()
+            message = 'success'
+        elif name in Live.objects.values_list("liveUser", flat=True):
+            liveId = ', '.join([q.liveId for q in Live.objects.filter(liveUser=name)])
             pub_data = timezone.now()
             message = 'success'
         else:
@@ -44,15 +59,14 @@ def SearchYtId(request):
         message='send live name'
     
     params={
-        'liveName':name,
-        'liveId':liveId,
+        'name':name,
+        'id':liveId,
         'message':message,
     }
 
     
     json_str = json.dumps(params, ensure_ascii=False, indent=2)
     return HttpResponse(json_str)
-
 
 
 def addVideos(request):
@@ -78,7 +92,7 @@ def addVideos(request):
         l.save()
 
         for re in reactionSet:
-            l.reactions_set.create(reaction=re, reactionCount=0)
+            l.reactions_set.create(reaction=re, reactionCount=1)
 
         message = 'success'
     
@@ -94,6 +108,7 @@ def addVideos(request):
 
 
 def setReaction(request):
+    print(request.method)
     if 'id' in request.GET:
         id = request.GET['id']
         re = request.GET['reaction']
@@ -102,7 +117,7 @@ def setReaction(request):
             try:
                 selected_reaction = l.reactions_set.get(reaction=re)
             except (KeyError, Reactions.DoNotExist):
-                message = 'failure'
+                message = '1failure'
                 params = {
                     'message':message,
                 }
@@ -119,14 +134,14 @@ def setReaction(request):
                 json_str = json.dumps(params, ensure_ascii=False, indent=2)
                 return HttpResponse(json_str)
         else:
-            message = 'failure'
+            message = '2failure'
             params = {
                 'message':message,
             }
             json_str = json.dumps(params, ensure_ascii=False, indent=2)
             return HttpResponse(json_str)
     else:
-        message = 'failure'
+        message = '3failure'
         params = {
             'message':message,
         }
@@ -140,19 +155,22 @@ def getReaction(request):
         if liveId in Live.objects.values_list('liveId', flat=True):
             l = get_object_or_404(Live, liveId=liveId)
             choiced_reaction = l.reactions_set.all()
+#           視聴者数で決める場合
 
-            youtube = build(YOUTUBE_API_SERVICE_NAME,YOUTUBE_API_VERSION,developerKey=DEVELOPER_KEY,cache_discovery=False)
-            response = youtube.videos().list(part="snippet,liveStreamingDetails",id=liveId).execute()
-            liveName = response["items"][0]["snippet"]["title"]
-            viewer = response["items"][0]["liveStreamingDetails"]["concurrentViewers"]
+#            youtube = build(YOUTUBE_API_SERVICE_NAME,YOUTUBE_API_VERSION,developerKey=DEVELOPER_KEY,cache_discovery=False)
+#            response = youtube.videos().list(part="snippet,liveStreamingDetails",id=liveId).execute()
+#            liveName = response["items"][0]["snippet"]["title"]
+#            viewer = response["items"][0]["liveStreamingDetails"]["concurrentViewers"]
             
             for react in choiced_reaction:
-                if react.reactionCount % min(int(viewer)) == 0:
+                if react.reactionCount % 11 == 0:
+                    react.reactionCount += 1
+                    react.save()
                     sendreaction = react.reaction
                     message = 'success'
 
                     params = {
-                        'Reaction':sendreaction,
+                        'reaction':sendreaction,
                         'message':message,
                     }
 
