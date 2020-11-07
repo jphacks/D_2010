@@ -9,7 +9,7 @@ from apiclient.discovery import build
 
 
 
-DEVELOPER_KEY = "You're API Key" #Youtube API Keyを入れるところ
+DEVELOPER_KEY = "AIzaSyBnUnVdQgp1W4AFuZ_-ElSTAt79M0aE0y0" #Youtube API Keyを入れるところ
 reactionSet = ['happy', 'sad', 'wow']
 YOUTUBE_API_SERVICE_NAME = "youtube"
 YOUTUBE_API_VERSION = "v3"
@@ -96,7 +96,7 @@ def addVideos(request):
 def setReaction(request):
     if 'id' in request.GET:
         id = request.GET['id']
-        re = request.POST['reaction']
+        re = request.GET['reaction']
         if id in Live.objects.values_list('liveId', flat=True) and re in reactionSet:
             l = get_object_or_404(Live, liveId = id)
             try:
@@ -136,19 +136,18 @@ def setReaction(request):
 
 def getReaction(request):
     if 'id' in request.GET:
-        id = request.GET['id']
-        if id in Live.objects.values_list('liveId', flat=True):
-            l = get_object_or_404(Live, liveId=id)
+        liveId = request.GET['id']
+        if liveId in Live.objects.values_list('liveId', flat=True):
+            l = get_object_or_404(Live, liveId=liveId)
             choiced_reaction = l.reactions_set.all()
 
-#            ここに呼び出されたら現在の視聴者数を取得するプログラムを書いてほしい
             youtube = build(YOUTUBE_API_SERVICE_NAME,YOUTUBE_API_VERSION,developerKey=DEVELOPER_KEY,cache_discovery=False)
             response = youtube.videos().list(part="snippet,liveStreamingDetails",id=liveId).execute()
             liveName = response["items"][0]["snippet"]["title"]
             viewer = response["items"][0]["liveStreamingDetails"]["concurrentViewers"]
             
             for react in choiced_reaction:
-                if react.reactionCount % min(viewer) == 0:
+                if react.reactionCount % min(int(viewer)) == 0:
                     sendreaction = react.reaction
                     message = 'success'
 
