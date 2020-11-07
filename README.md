@@ -3,7 +3,7 @@
 [![IMAGE ALT TEXT HERE](https://jphacks.com/wp-content/uploads/2020/09/JPHACKS2020_ogp.jpg)](https://www.youtube.com/watch?v=G5rULR53uMk)
 
 ## 製品概要
-YouTube Liveの動画に、他の視聴者にも見れるリアクションを投げられるサイト
+YouTube Liveの動画に、他の視聴者に見られるリアクションを投げられるサイト
 ### 背景(製品開発のきっかけ、課題等）
 YouTube Liveに盛り上がりを感じにくい為、自分以外の大勢も見ているという体感が欲しいと思った。
 ### 製品説明（具体的な製品の説明）
