@@ -28,6 +28,7 @@ export default {
   name: 'Home',
   data() {
     return {
+      query : "",
       videos: [],
       interval: undefined,
     }
