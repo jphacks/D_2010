@@ -40,7 +40,6 @@
     <transition name="fade">
       <div v-if="isHappy" class="animation">
         <div class="bg" :style="{ backgroundImage: 'url(' + require('@/assets/giphy.gif') + ')' }">
-
         </div>
       </div>
     </transition>
@@ -59,7 +58,7 @@ export default {
       query: "",
       reaction: "",
       interval: undefined,
-      isHappy: true
+      isHappy: false,
     }
   },
   created() {
