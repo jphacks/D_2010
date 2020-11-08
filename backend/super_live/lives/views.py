@@ -23,6 +23,56 @@ def min(a):
         return a
 
 
+def SearchVideos(request):
+    if 'name' in request.GET:
+        name = request.GET['name']
+        name = urllib.parse.unquote(name)
+        memo_list=[]
+        result_list = []
+
+        for name_str in Live.objects.values_list("liveName", flat=True):
+            for result_name in Live.objects.filter(liveName=name):
+                if result_name.liveId not in memo_list:
+                    memo_list.append(result_name.liveId)
+                    name = result_name.liveUser
+                    param = {
+                        'id': result_name.liveID,
+                        'videoTitle':result_name.liveName,
+                    }
+                    result_list.append(param)
+                    message = 'success'
+
+        for name_str in Live.objects.values_list("liveUser", flat=True):
+            for result_user in Live.objects.filter(liveUser=name):
+                if result_user.liveId not in memo_list:
+                    memo_list.append(result_user.liveId)
+                    param = {
+                        'id':result_user.liveId,
+                        'videoTitle':result_user.liveName,
+                    }
+                    result_list.append(param)
+                    message = 'success'
+
+        if (name not in Live.objects.values_list("liveName", flat=True) and (name not in Live.objects.values_list("liveUser", flat=True))):
+            liveId='NA'
+            message = 'do not exist such a live'
+    
+    else:
+        name='NA'
+        liveId='NA'
+        message='send live name'
+    
+    params={
+        'name':name,
+        'videos':result_list,
+        'message':message,
+    }
+
+    
+    json_str = json.dumps(params, ensure_ascii=False, indent=2)
+    return HttpResponse(json_str)
+
+
 
 def SearchYtId(request):
     if 'name' in request.GET:
@@ -33,21 +83,14 @@ def SearchYtId(request):
                 liveId = ', '.join([q.liveId for q in Live.objects.filter(liveName=name)])
                 pub_data = timezone.now()
                 message = 'success'
+                
         for name_str in Live.objects.values_list("liveUser", flat=True):
             if name in name_str:
                 liveId = ', '.join([q.liveId for q in Live.objects.filter(liveUser=name)])
                 pub_data = timezone.now()
                 message = 'success'
-                
-        if name in Live.objects.values_list("liveName", flat=True):
-            liveId = ', '.join([q.liveId for q in Live.objects.filter(liveName=name)])
-            pub_data = timezone.now()
-            message = 'success'
-        elif name in Live.objects.values_list("liveUser", flat=True):
-            liveId = ', '.join([q.liveId for q in Live.objects.filter(liveUser=name)])
-            pub_data = timezone.now()
-            message = 'success'
-        else:
+
+        if (name not in Live.objects.values_list("liveName", flat=True)) and (name not in Live.objects.values_list("liveUser", flat=True)):
             liveId='NA'
             pub_data = 'NA'
             message = 'do not exist such a live'
@@ -163,7 +206,7 @@ def getReaction(request):
 #            viewer = response["items"][0]["liveStreamingDetails"]["concurrentViewers"]
             
             for react in choiced_reaction:
-                if react.reactionCount % 11 == 0:
+                if react.reactionCount % 3 == 0:
                     react.reactionCount += 1
                     react.save()
                     sendreaction = react.reaction

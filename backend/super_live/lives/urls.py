@@ -8,4 +8,5 @@ urlpatterns = [
     path('addvideo/', views.addVideos, name='addVideos'),
     path('setReaction/',views.setReaction, name='setReaction'),
     path('getReaction/', views.getReaction, name='getReaction'),
+    path('searchvideo/', views.SearchVideos, name='SearchVideos'),
 ]
