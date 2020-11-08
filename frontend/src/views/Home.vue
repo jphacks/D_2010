@@ -10,8 +10,8 @@
     </div>
 
     <div v-for="item in videos" :key="item.name">
-      <div class="video">
-        <div class="video__img" @click="watchVideo(item.id)">
+      <div class="video" @click="watchVideo(item.id)">
+        <div class="video__img">
           <img :src="'https://img.youtube.com/vi/'+item.id+'/hqdefault.jpg'">
         </div>
         <div class="video__content">
