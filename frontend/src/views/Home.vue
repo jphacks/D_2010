@@ -12,7 +12,6 @@
       <div class="video">
         <div class="label">
           <div :style="{ backgroundImage: 'url(https://img.youtube.com/vi/bI5jpueiCWw/hqdefault.jpg)' }"></div>
-<!--          <div :style="{ backgroundImage: 'url(' + require('@/assets/giphy.gif') + ')' }"></div>-->
         </div>
         <div class="video__name">
           {{ item.title }}
@@ -69,46 +68,11 @@ export default {
 </script>
 
 <style lang="scss">
-
-iframe {
-  width: 100%;
-  max-width: 650px; /* Also helpful. Optional. */
-}
-
 .content-wrapper {
   width: 650px;
   max-width: 100vw;
   margin-right: 0;
   margin-left: 0;
   max-height: 50vh;
-}
-
-.animation {
-  width: 100vw;
-  height: 50vh;
-  z-index: 300;
-  position: fixed;
-  top: 50vh;
-  left: 0;
-  padding: 50px;
-
-
-  .bg {
-    width: 100%;
-    max-width: 600px;
-    height: 100%;
-    margin-left: auto;
-    margin-right: auto;
-    background-size: cover;
-  }
-}
-
-.fade-enter-active, .fade-leave-active {
-  transition: opacity .8s;
-}
-
-.fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */
-{
-  opacity: 0;
 }
 </style>
