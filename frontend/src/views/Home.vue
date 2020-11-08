@@ -1,46 +1,27 @@
 <template>
   <div class="home" style="display: flex; justify-content: center;">
-    <div style="width: 650px; max-width: 100vw; margin-right: 0; margin-left: 0;">
-      <div style="display: flex; flex-direction: row; ">
-        <v-text-field v-model="query" @keydown.enter="changeVideo"></v-text-field>
-        <v-btn depressed
-               color="primary"
-               @click="changeVideo">
-          検索
-        </v-btn>
-      </div>
-
-      <div style="width: 100%; padding: 10px;">
-        <youtube :video-id="videoId" ref="youtube"></youtube>
-      </div>
-
-      <div style="display: flex; flex-direction: row; justify-content: center;">
-        <v-btn depressed
-               color="rgba(0,0,0,0.3)"
-               @click="sendReaction('happy')">
-          <img width="20" src="@/assets/happy.png">
-        </v-btn>
-        <v-btn depressed
-               color="rgba(0,0,0,0.3)"
-               @click="sendReaction('happy')">
-          <img width="20" src="@/assets/sad.png">
-        </v-btn>
-        <v-btn depressed
-               color="rgba(0,0,0,0.3)"
-               @click="sendReaction('happy')">
-          <img width="20" src="@/assets/wow.png">
-        </v-btn>
-        <v-btn depressed
-               color="rgba(0,0,0,0.3)"
-               @click="sendReaction('happy')">
-          <img width="20" src="@/assets/love.png">
-        </v-btn>
+    <div style="display: flex; flex-direction: row; ">
+      <v-text-field v-model="query" @keydown.enter="changeVideo"></v-text-field>
+      <v-btn depressed
+             color="primary"
+             @click="changeVideo">
+        検索
+      </v-btn>
+    </div>
+    <div v-for="item in videos" :key="item.title">
+      <div class="video">
+        <div class="label">
+          <div :style="{ backgroundImage: 'url(https://img.youtube.com/vi/bI5jpueiCWw/hqdefault.jpg)' }"></div>
+<!--          <div :style="{ backgroundImage: 'url(' + require('@/assets/giphy.gif') + ')' }"></div>-->
+        </div>
+        <div class="video__name">
+          {{ item.title }}
+        </div>
+        <div class="video__description">
+          {{ item.description }}
+        </div>
       </div>
     </div>
-    <transition name="fade">
-      <div v-if="isHappy" class="animation" :style="{ backgroundImage: 'url(' + require('@/assets/giphy.gif') + ')' }">
-      </div>
-    </transition>
   </div>
 </template>
 
@@ -51,20 +32,8 @@ export default {
   name: 'Home',
   data() {
     return {
-      videoId: "",
-      query: "",
-      reaction: "",
+      videos: [],
       interval: undefined,
-      isHappy: false,
-    }
-  },
-  created() {
-     this.interval = setInterval(this.receiveReaction, 1000)
-  },
-  beforeDestroy() {
-    if (this.interval) {
-      clearInterval(this.interval)
-      this.interval = undefined
     }
   },
   methods: {
@@ -72,28 +41,12 @@ export default {
       this.player.playVideo()
     },
     changeVideo() {
-      let temp;
-      this.getLiveid().then((response) => {
-        temp = response.data;
-        this.videoId = temp.id;
+      this.getVideoIds().then((response) => {
+        this.videos = response.data;
       })
     },
-    sendReaction(reaction) {
-      this.reaction = reaction;
-      this.setReaction()
-    },
-    receiveReaction() {
-      let temp;
-      this.getReaction().then((response) => {
-        temp = response.data;
-        if (temp.reaction === "happy") {
-          this.isHappy = true;
-        } else {
-          this.isHappy = false;
-        }
-      })
-    },
-    async getLiveid() {
+
+    async getVideoIds() {
       try {
         return await
             axios.get("http://127.0.0.1:8000/search/", {params: this.axiosParams})
@@ -101,52 +54,12 @@ export default {
         console.error(error)
       }
     },
-    async getReaction() {
-      try {
-        return await
-            axios.get("http://127.0.0.1:8000/getReaction/", {params: this.getReactionParams})
-      } catch (error) {
-        console.error(error)
-      }
-    },
-    async setReaction() {
-      try {
-        return await await axios.get("http://127.0.0.1:8000/setReaction/", {params: this.reactionParams});
-      } catch (error) {
-        console.error(error)
-      }
-    },
-
-    // async setReaction() {
-    //   const client = axios.create({
-    //     headers: {
-    //       'Content-Type': 'application/json',
-    //     },
-    //   });
-    //   try {
-    //     return await await client.post("http://127.0.0.1:8000/setReaction", this.reactionParams);
-    //   } catch (error) {
-    //     console.error(error)
-    //   }
-    // },
-
   },
   computed: {
     axiosParams() {
       const params = new URLSearchParams();
       params.append('name', this.query);
       return params;
-    },
-    reactionParams() {
-      const body = new URLSearchParams();
-      body.append('id', this.videoId);
-      body.append('reaction', this.reaction);
-      return body;
-    },
-    getReactionParams() {
-      const body = new URLSearchParams();
-      body.append('id', this.videoId);
-      return body;
     },
     player() {
       return this.$refs.youtube.player
@@ -162,14 +75,32 @@ iframe {
   max-width: 650px; /* Also helpful. Optional. */
 }
 
+.content-wrapper {
+  width: 650px;
+  max-width: 100vw;
+  margin-right: 0;
+  margin-left: 0;
+  max-height: 50vh;
+}
+
 .animation {
   width: 100vw;
-  height: 100vh;
+  height: 50vh;
   z-index: 300;
   position: fixed;
-  top: 0;
+  top: 50vh;
   left: 0;
-  background-size: cover;
+  padding: 50px;
+
+
+  .bg {
+    width: 100%;
+    max-width: 600px;
+    height: 100%;
+    margin-left: auto;
+    margin-right: auto;
+    background-size: cover;
+  }
 }
 
 .fade-enter-active, .fade-leave-active {
