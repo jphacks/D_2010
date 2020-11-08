@@ -1,7 +1,7 @@
 <template>
   <div class="home" style="display: flex; justify-content: center;">
     <div class="content-wrapper">
-      {{id}}
+      {{ id }}
       <div style="display: flex; flex-direction: row; ">
         <v-text-field v-model="query" @keydown.enter="changeVideo"></v-text-field>
         <v-btn depressed
@@ -53,10 +53,9 @@ const axios = require('axios')
 
 export default {
   name: 'Video',
-  props: ['id'],
+  props: ['videoId'],
   data() {
     return {
-      videoId: "",
       query: "",
       reaction: "",
       interval: undefined,
@@ -121,20 +120,6 @@ export default {
         console.error(error)
       }
     },
-
-    // async setReaction() {
-    //   const client = axios.create({
-    //     headers: {
-    //       'Content-Type': 'application/json',
-    //     },
-    //   });
-    //   try {
-    //     return await await client.post("http://127.0.0.1:8000/setReaction", this.reactionParams);
-    //   } catch (error) {
-    //     console.error(error)
-    //   }
-    // },
-
   },
   computed: {
     axiosParams() {

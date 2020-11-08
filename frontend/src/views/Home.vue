@@ -8,16 +8,13 @@
         検索
       </v-btn>
     </div>
-    <div v-for="item in videos" :key="item.title">
+    <div v-for="item in videos" :key="item.name">
       <div class="video">
-        <div class="label">
+        <div class="label" @click="watchVideo(item.id)">
           <div :style="{ backgroundImage: 'url(https://img.youtube.com/vi/bI5jpueiCWw/hqdefault.jpg)' }"></div>
         </div>
         <div class="video__name">
-          {{ item.title }}
-        </div>
-        <div class="video__description">
-          {{ item.description }}
+          {{ item.name }}
         </div>
       </div>
     </div>
@@ -44,11 +41,13 @@ export default {
         this.videos = response.data;
       })
     },
-
+    watchVideo(id) {
+      this.$router.push(`/video/${id}`)
+    },
     async getVideoIds() {
       try {
         return await
-            axios.get("http://127.0.0.1:8000/search/", {params: this.axiosParams})
+            axios.get("http://127.0.0.1:8000/searchvideo/", {params: this.axiosParams})
       } catch (error) {
         console.error(error)
       }
