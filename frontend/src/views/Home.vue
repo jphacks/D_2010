@@ -1,46 +1,31 @@
 <template>
-  <div class="home" style="display: flex; justify-content: center;">
-    <div style="width: 650px; max-width: 100vw; margin-right: 0; margin-left: 0;">
-      <div style="display: flex; flex-direction: row; ">
-        <v-text-field v-model="query" @keydown.enter="changeVideo"></v-text-field>
-        <v-btn depressed
-               color="primary"
-               @click="changeVideo">
-          検索
-        </v-btn>
-      </div>
+  <div class="search">
+    <div style="display: flex; flex-direction: row; ">
+      <v-text-field v-model="query" @keydown.enter="changeVideo"></v-text-field>
+      <v-btn depressed
+             color="primary"
+             @click="changeVideo">
+        検索
+      </v-btn>
+    </div>
 
-      <div style="width: 100%; padding: 10px;">
-        <youtube :video-id="videoId" ref="youtube"></youtube>
-      </div>
+    <div v-for="item in videos" :key="item.name">
+      <div class="video" @click="watchVideo(item.id)">
+        <div class="video__img">
+          <img :src="'https://img.youtube.com/vi/'+item.id+'/hqdefault.jpg'">
+        </div>
+        <div class="video__content">
+          <h2 class="video__name">
+            動画のタイトル : {{ item.videoTitle }}
+          </h2>
 
-      <div style="display: flex; flex-direction: row; justify-content: center;">
-        <v-btn depressed
-               color="rgba(0,0,0,0.3)"
-               @click="sendReaction('happy')">
-          <img width="20" src="@/assets/happy.png">
-        </v-btn>
-        <v-btn depressed
-               color="rgba(0,0,0,0.3)"
-               @click="sendReaction('happy')">
-          <img width="20" src="@/assets/sad.png">
-        </v-btn>
-        <v-btn depressed
-               color="rgba(0,0,0,0.3)"
-               @click="sendReaction('happy')">
-          <img width="20" src="@/assets/wow.png">
-        </v-btn>
-        <v-btn depressed
-               color="rgba(0,0,0,0.3)"
-               @click="sendReaction('happy')">
-          <img width="20" src="@/assets/love.png">
-        </v-btn>
+          <h4 class="video__user">
+            チャンネル名 : {{ name }}
+          </h4>
+        </div>
+
       </div>
     </div>
-    <transition name="fade">
-      <div v-if="isHappy" class="animation" :style="{ backgroundImage: 'url(' + require('@/assets/giphy.gif') + ')' }">
-      </div>
-    </transition>
   </div>
 </template>
 
@@ -51,20 +36,10 @@ export default {
   name: 'Home',
   data() {
     return {
-      videoId: "",
       query: "",
-      reaction: "",
+      name: "",
+      videos: [],
       interval: undefined,
-      isHappy: false,
-    }
-  },
-  created() {
-     this.interval = setInterval(this.receiveReaction, 1000)
-  },
-  beforeDestroy() {
-    if (this.interval) {
-      clearInterval(this.interval)
-      this.interval = undefined
     }
   },
   methods: {
@@ -73,63 +48,23 @@ export default {
     },
     changeVideo() {
       let temp;
-      this.getLiveid().then((response) => {
-        temp = response.data;
-        this.videoId = temp.id;
+      this.getVideoIds().then((response) => {
+        temp = JSON.parse(response.data);
+        this.name = temp.name;
+        this.videos = temp.videos;
       })
     },
-    sendReaction(reaction) {
-      this.reaction = reaction;
-      this.setReaction()
+    watchVideo(id) {
+      this.$router.push(`/video/${id}`)
     },
-    receiveReaction() {
-      let temp;
-      this.getReaction().then((response) => {
-        temp = response.data;
-        if (temp.reaction === "happy") {
-          this.isHappy = true;
-        } else {
-          this.isHappy = false;
-        }
-      })
-    },
-    async getLiveid() {
+    async getVideoIds() {
       try {
         return await
-            axios.get("http://127.0.0.1:8000/search/", {params: this.axiosParams})
+            axios.get("http://127.0.0.1:8000/searchvideo/", {params: this.axiosParams})
       } catch (error) {
         console.error(error)
       }
     },
-    async getReaction() {
-      try {
-        return await
-            axios.get("http://127.0.0.1:8000/getReaction/", {params: this.getReactionParams})
-      } catch (error) {
-        console.error(error)
-      }
-    },
-    async setReaction() {
-      try {
-        return await await axios.get("http://127.0.0.1:8000/setReaction/", {params: this.reactionParams});
-      } catch (error) {
-        console.error(error)
-      }
-    },
-
-    // async setReaction() {
-    //   const client = axios.create({
-    //     headers: {
-    //       'Content-Type': 'application/json',
-    //     },
-    //   });
-    //   try {
-    //     return await await client.post("http://127.0.0.1:8000/setReaction", this.reactionParams);
-    //   } catch (error) {
-    //     console.error(error)
-    //   }
-    // },
-
   },
   computed: {
     axiosParams() {
@@ -137,47 +72,39 @@ export default {
       params.append('name', this.query);
       return params;
     },
-    reactionParams() {
-      const body = new URLSearchParams();
-      body.append('id', this.videoId);
-      body.append('reaction', this.reaction);
-      return body;
-    },
-    getReactionParams() {
-      const body = new URLSearchParams();
-      body.append('id', this.videoId);
-      return body;
-    },
-    player() {
-      return this.$refs.youtube.player
-    }
   }
 }
 </script>
 
 <style lang="scss">
-
-iframe {
-  width: 100%;
-  max-width: 650px; /* Also helpful. Optional. */
+.search {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding-left: 300px;
+  padding-right: 300px;
 }
 
-.animation {
-  width: 100vw;
-  height: 100vh;
-  z-index: 300;
-  position: fixed;
-  top: 0;
-  left: 0;
-  background-size: cover;
-}
+.video {
+  display: flex;
+  flex-direction: row;
+  cursor: pointer;
+  text-align: left;
 
-.fade-enter-active, .fade-leave-active {
-  transition: opacity .8s;
-}
+  &__img {
+    img {
+      width: 100%;
+      max-width: 250px;
+    }
+  }
 
-.fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */
-{
-  opacity: 0;
+  &__content {
+    flex-direction: column;
+    margin-left: 50px;
+  }
+
+  h4 {
+    margin-top: 30px;
+  }
 }
 </style>

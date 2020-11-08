@@ -1,5 +1,9 @@
 <template>
   <div id="app">
+    <div class="app-title">
+      <h1>SUPER LIVE</h1>
+      <p>検索したい動画を入力してください</p>
+    </div>
     <v-app>
       <router-view/>
     </v-app>
@@ -25,5 +29,8 @@
       color: #42b983;
     }
   }
+}
+.app-title{
+  margin-bottom: 50px;
 }
 </style>
